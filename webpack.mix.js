@@ -85,7 +85,6 @@ mix.webpackConfig(config);
    .sass('resources/assets/sass/adminMobile.scss', 'public/css')
    .version();*/
 // mix.browserSync('tclvue.net');
-
  mix.js('resources/assets/js/admin/pc/appPc.js', 'public/js')
  .sass('resources/assets/sass/appPc.scss', 'public/css')
  .js('resources/assets/js/admin/mobile/appMobile.js', 'public/js')

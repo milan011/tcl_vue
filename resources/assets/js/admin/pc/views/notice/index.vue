@@ -16,7 +16,7 @@
       style="width: 100%;">
       <el-table-column :label="$t('table.id')" width="80%" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}ss</span>
+          <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('notice.title')" show-overflow-tooltip align="center">
@@ -264,7 +264,7 @@ export default {
     },
     createData() {
       console.log(this.temp)
-      // return false
+      return false
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           createNotice(this.temp).then((response) => {
