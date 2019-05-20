@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column :label="$t('notice.title')" show-overflow-tooltip align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <span>{{ scope.row.title }}2</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.date')" width="150px" align="center">
