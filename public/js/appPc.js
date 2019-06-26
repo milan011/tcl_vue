@@ -3623,9 +3623,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator__ = __webpack_require__("./node_modules/babel-runtime/core-js/get-iterator.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ScrollPane__ = __webpack_require__("./resources/assets/js/components/ScrollPane/index.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ScrollPane___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_ScrollPane__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_i18n__ = __webpack_require__("./resources/assets/js/utils/i18n.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray__ = __webpack_require__("./node_modules/babel-runtime/helpers/toConsumableArray.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends__ = __webpack_require__("./node_modules/babel-runtime/helpers/extends.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_ScrollPane__ = __webpack_require__("./resources/assets/js/components/ScrollPane/index.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_ScrollPane___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_ScrollPane__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_i18n__ = __webpack_require__("./resources/assets/js/utils/i18n.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_path__ = __webpack_require__("./node_modules/path-browserify/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_path__);
+
+
 
 //
 //
@@ -3651,12 +3659,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: { ScrollPane: __WEBPACK_IMPORTED_MODULE_1__components_ScrollPane___default.a },
+  components: { ScrollPane: __WEBPACK_IMPORTED_MODULE_3__components_ScrollPane___default.a },
   data: function data() {
     return {
       visible: false,
@@ -3669,6 +3679,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   computed: {
     visitedViews: function visitedViews() {
       return this.$store.state.tagsView.visitedViews;
+    },
+    routes: function routes() {
+      return this.$store.state.permission.routers;
     }
   },
   watch: {
@@ -3685,11 +3698,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   mounted: function mounted() {
+    this.initTags();
     this.addViewTags();
   },
 
   methods: {
-    generateTitle: __WEBPACK_IMPORTED_MODULE_2__utils_i18n__["a" /* generateTitle */], // generateTitle by vue-i18n
+    generateTitle: __WEBPACK_IMPORTED_MODULE_4__utils_i18n__["a" /* generateTitle */], // generateTitle by vue-i18n
     generateRoute: function generateRoute() {
       if (this.$route.name) {
         return this.$route;
@@ -3699,6 +3713,65 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     isActive: function isActive(route) {
       return route.path === this.$route.path;
     },
+    filterAffixTags: function filterAffixTags(routes) {
+      var _this = this;
+
+      var basePath = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '/';
+
+      var tags = [];
+      routes.forEach(function (route) {
+
+        if (route.meta && route.meta.affix) {
+          var tagPath = __WEBPACK_IMPORTED_MODULE_5_path___default.a.resolve(basePath, route.path);
+          tags.push({
+            fullPath: tagPath,
+            path: tagPath,
+            name: route.name,
+            meta: __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends___default()({}, route.meta)
+          });
+        }
+        if (route.children) {
+          // alert('5')
+          var tempTags = _this.filterAffixTags(route.children, route.path);
+          if (tempTags.length >= 1) {
+            tags = [].concat(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray___default()(tags), __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray___default()(tempTags));
+          }
+        }
+      });
+      return tags;
+    },
+    initTags: function initTags() {
+      // console.log(this.routes)
+      var affixTags = this.affixTags = this.filterAffixTags(this.routes);
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default()(affixTags), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var tag = _step.value;
+
+          // Must have tag name
+          if (tag.name) {
+            console.log(tag.name);
+            this.$store.dispatch('addVisitedView', tag);
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    },
     addViewTags: function addViewTags() {
       var route = this.generateRoute();
       if (!route) {
@@ -3707,74 +3780,75 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.$store.dispatch('addView', route);
     },
     moveToCurrentTag: function moveToCurrentTag() {
-      var _this = this;
+      var _this2 = this;
 
       var tags = this.$refs.tag;
+      // console.log(tags)
       this.$nextTick(function () {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default()(tags), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var tag = _step.value;
+          for (var _iterator2 = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default()(tags), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var tag = _step2.value;
 
-            if (tag.to.path === _this.$route.path) {
-              _this.$refs.scrollPane.moveToTarget(tag.$el);
+            if (tag.to.path === _this2.$route.path) {
+              _this2.$refs.scrollPane.moveToTarget(tag.$el);
               break;
             }
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
             }
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            if (_didIteratorError2) {
+              throw _iteratorError2;
             }
           }
         }
       });
     },
     refreshSelectedTag: function refreshSelectedTag(view) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.$store.dispatch('delCachedView', view).then(function () {
         var fullPath = view.fullPath;
 
-        _this2.$nextTick(function () {
-          _this2.$router.replace({
+        _this3.$nextTick(function () {
+          _this3.$router.replace({
             path: '/redirect' + fullPath
           });
         });
       });
     },
     closeSelectedTag: function closeSelectedTag(view) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.$store.dispatch('delView', view).then(function (_ref) {
         var visitedViews = _ref.visitedViews;
 
-        if (_this3.isActive(view)) {
+        if (_this4.isActive(view)) {
           var latestView = visitedViews.slice(-1)[0];
           if (latestView) {
-            _this3.$router.push(latestView);
+            _this4.$router.push(latestView);
           } else {
-            _this3.$router.push('/');
+            _this4.$router.push('/');
           }
         }
       });
     },
     closeOthersTags: function closeOthersTags() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.$router.push(this.selectedTag);
       this.$store.dispatch('delOthersViews', this.selectedTag).then(function () {
-        _this4.moveToCurrentTag();
+        _this5.moveToCurrentTag();
       });
     },
     closeAllTags: function closeAllTags() {
@@ -89010,16 +89084,19 @@ var render = function() {
               _vm._v(
                 "\n      " + _vm._s(_vm.generateTitle(tag.title)) + "\n      "
               ),
-              _c("span", {
-                staticClass: "el-icon-close",
-                on: {
-                  click: function($event) {
-                    $event.preventDefault()
-                    $event.stopPropagation()
-                    _vm.closeSelectedTag(tag)
-                  }
-                }
-              })
+              _vm._v(" "),
+              !tag.meta.affix
+                ? _c("span", {
+                    staticClass: "el-icon-close",
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        $event.stopPropagation()
+                        _vm.closeSelectedTag(tag)
+                      }
+                    }
+                  })
+                : _vm._e()
             ]
           )
         })
@@ -106857,6 +106934,7 @@ __WEBPACK_IMPORTED_MODULE_1__adminPc_router__["c" /* default */].afterEach(funct
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return constantRouterMap; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return asyncRouterMap; });
+/* harmony export (immutable) */ __webpack_exports__["d"] = resetRouter;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__("./node_modules/vue/dist/vue.common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__("./node_modules/vue-router/dist/vue-router.esm.js");
@@ -106932,6 +107010,7 @@ var constantRouterMap = [{
   path: '/',
   component: __WEBPACK_IMPORTED_MODULE_2__adminPc_views_layout_Layout___default.a,
   redirect: 'dashboard',
+  meta: { affix: true },
   children: [{
     path: 'dashboard',
     // component: () => import('@adminPc/views/dashboard/index'),
@@ -106939,7 +107018,7 @@ var constantRouterMap = [{
       return void __webpack_require__.e/* require */(17).then(function() { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__("./resources/assets/js/admin/pc/views/dashboard/index.vue")]; ((resolve).apply(null, __WEBPACK_AMD_REQUIRE_ARRAY__));}.bind(this)).catch(__webpack_require__.oe);
     },
     name: 'Dashboard',
-    meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
+    meta: { title: 'dashboard', icon: 'dashboard', noCache: true, affix: true }
   }]
 }, {
   hidden: true,
@@ -106951,13 +107030,11 @@ var constantRouterMap = [{
   meta: { title: 'passwordReset' }
 }];
 
-/* harmony default export */ __webpack_exports__["c"] = (new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
+/*export default new Router({
   // mode: 'history', // require service support
-  scrollBehavior: function scrollBehavior() {
-    return { y: 0 };
-  },
+  scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
-}));
+})*/
 
 var asyncRouterMap = [
 //infoStatisticsRouter,
@@ -106972,6 +107049,26 @@ __WEBPACK_IMPORTED_MODULE_6__modules_shop__["a" /* default */], __WEBPACK_IMPORT
 
 
 { path: '*', redirect: '/404', hidden: true }];
+
+var createRouter = function createRouter() {
+  return new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
+    // mode: 'history', // require service support
+    scrollBehavior: function scrollBehavior() {
+      return { y: 0 };
+    },
+    routes: constantRouterMap
+  });
+};
+
+var router = createRouter();
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+function resetRouter() {
+  var newRouter = createRouter();
+  router.matcher = newRouter.matcher; // reset router
+}
+
+/* harmony default export */ __webpack_exports__["c"] = (router);
 
 /***/ }),
 
@@ -107595,21 +107692,22 @@ var tagsView = {
     },
 
     DEL_OTHERS_VISITED_VIEWS: function DEL_OTHERS_VISITED_VIEWS(state, view) {
+      state.visitedViews = state.visitedViews.filter(function (v) {
+        return v.meta.affix || v.path === view.path;
+      });
+    },
+    DEL_OTHERS_CACHED_VIEWS: function DEL_OTHERS_CACHED_VIEWS(state, view) {
       var _iteratorNormalCompletion3 = true;
       var _didIteratorError3 = false;
       var _iteratorError3 = undefined;
 
       try {
-        for (var _iterator3 = __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_get_iterator___default()(state.visitedViews.entries()), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var _ref3 = _step3.value;
+        for (var _iterator3 = __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_get_iterator___default()(state.cachedViews), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var i = _step3.value;
 
-          var _ref4 = __WEBPACK_IMPORTED_MODULE_3_babel_runtime_helpers_slicedToArray___default()(_ref3, 2);
-
-          var i = _ref4[0];
-          var v = _ref4[1];
-
-          if (v.path === view.path) {
-            state.visitedViews = state.visitedViews.slice(i, i + 1);
+          if (i === view.name) {
+            var index = state.cachedViews.indexOf(i);
+            state.cachedViews = state.cachedViews.slice(index, index + 1);
             break;
           }
         }
@@ -107628,39 +107726,13 @@ var tagsView = {
         }
       }
     },
-    DEL_OTHERS_CACHED_VIEWS: function DEL_OTHERS_CACHED_VIEWS(state, view) {
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
-
-      try {
-        for (var _iterator4 = __WEBPACK_IMPORTED_MODULE_2_babel_runtime_core_js_get_iterator___default()(state.cachedViews), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var i = _step4.value;
-
-          if (i === view.name) {
-            var index = state.cachedViews.indexOf(i);
-            state.cachedViews = state.cachedViews.slice(index, index + 1);
-            break;
-          }
-        }
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
-      }
-    },
 
     DEL_ALL_VISITED_VIEWS: function DEL_ALL_VISITED_VIEWS(state) {
-      state.visitedViews = [];
+      // keep affix tags
+      var affixTags = state.visitedViews.filter(function (tag) {
+        return tag.meta.affix;
+      });
+      state.visitedViews = affixTags;
     },
     DEL_ALL_CACHED_VIEWS: function DEL_ALL_CACHED_VIEWS(state) {
       state.cachedViews = [];
@@ -107668,25 +107740,25 @@ var tagsView = {
 
   },
   actions: {
-    addView: function addView(_ref5, view) {
-      var dispatch = _ref5.dispatch;
+    addView: function addView(_ref3, view) {
+      var dispatch = _ref3.dispatch;
 
       dispatch('addVisitedView', view);
       dispatch('addCachedView', view);
     },
-    addVisitedView: function addVisitedView(_ref6, view) {
-      var commit = _ref6.commit;
+    addVisitedView: function addVisitedView(_ref4, view) {
+      var commit = _ref4.commit;
 
       commit('ADD_VISITED_VIEW', view);
     },
-    addCachedView: function addCachedView(_ref7, view) {
-      var commit = _ref7.commit;
+    addCachedView: function addCachedView(_ref5, view) {
+      var commit = _ref5.commit;
 
       commit('ADD_CACHED_VIEW', view);
     },
-    delView: function delView(_ref8, view) {
-      var dispatch = _ref8.dispatch,
-          state = _ref8.state;
+    delView: function delView(_ref6, view) {
+      var dispatch = _ref6.dispatch,
+          state = _ref6.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         dispatch('delVisitedView', view);
@@ -107697,27 +107769,27 @@ var tagsView = {
         });
       });
     },
-    delVisitedView: function delVisitedView(_ref9, view) {
-      var commit = _ref9.commit,
-          state = _ref9.state;
+    delVisitedView: function delVisitedView(_ref7, view) {
+      var commit = _ref7.commit,
+          state = _ref7.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         commit('DEL_VISITED_VIEW', view);
         resolve([].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(state.visitedViews)));
       });
     },
-    delCachedView: function delCachedView(_ref10, view) {
-      var commit = _ref10.commit,
-          state = _ref10.state;
+    delCachedView: function delCachedView(_ref8, view) {
+      var commit = _ref8.commit,
+          state = _ref8.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         commit('DEL_CACHED_VIEW', view);
         resolve([].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(state.cachedViews)));
       });
     },
-    delOthersViews: function delOthersViews(_ref11, view) {
-      var dispatch = _ref11.dispatch,
-          state = _ref11.state;
+    delOthersViews: function delOthersViews(_ref9, view) {
+      var dispatch = _ref9.dispatch,
+          state = _ref9.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         dispatch('delOthersVisitedViews', view);
@@ -107728,27 +107800,27 @@ var tagsView = {
         });
       });
     },
-    delOthersVisitedViews: function delOthersVisitedViews(_ref12, view) {
-      var commit = _ref12.commit,
-          state = _ref12.state;
+    delOthersVisitedViews: function delOthersVisitedViews(_ref10, view) {
+      var commit = _ref10.commit,
+          state = _ref10.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         commit('DEL_OTHERS_VISITED_VIEWS', view);
         resolve([].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(state.visitedViews)));
       });
     },
-    delOthersCachedViews: function delOthersCachedViews(_ref13, view) {
-      var commit = _ref13.commit,
-          state = _ref13.state;
+    delOthersCachedViews: function delOthersCachedViews(_ref11, view) {
+      var commit = _ref11.commit,
+          state = _ref11.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         commit('DEL_OTHERS_CACHED_VIEWS', view);
         resolve([].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(state.cachedViews)));
       });
     },
-    delAllViews: function delAllViews(_ref14, view) {
-      var dispatch = _ref14.dispatch,
-          state = _ref14.state;
+    delAllViews: function delAllViews(_ref12, view) {
+      var dispatch = _ref12.dispatch,
+          state = _ref12.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         dispatch('delAllVisitedViews', view);
@@ -107759,18 +107831,18 @@ var tagsView = {
         });
       });
     },
-    delAllVisitedViews: function delAllVisitedViews(_ref15) {
-      var commit = _ref15.commit,
-          state = _ref15.state;
+    delAllVisitedViews: function delAllVisitedViews(_ref13) {
+      var commit = _ref13.commit,
+          state = _ref13.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         commit('DEL_ALL_VISITED_VIEWS');
         resolve([].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(state.visitedViews)));
       });
     },
-    delAllCachedViews: function delAllCachedViews(_ref16) {
-      var commit = _ref16.commit,
-          state = _ref16.state;
+    delAllCachedViews: function delAllCachedViews(_ref14) {
+      var commit = _ref14.commit,
+          state = _ref14.state;
 
       return new __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_promise___default.a(function (resolve) {
         commit('DEL_ALL_CACHED_VIEWS');
@@ -107792,6 +107864,8 @@ var tagsView = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__api_login_js__ = __webpack_require__("./resources/assets/js/api/login.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_auth__ = __webpack_require__("./resources/assets/js/utils/auth.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__adminPc_router__ = __webpack_require__("./resources/assets/js/admin/pc/router/index.js");
+
 
 
 
@@ -107929,6 +108003,7 @@ var user = {
           commit('SET_TOKEN', '');
           commit('SET_ROLES', []);
           Object(__WEBPACK_IMPORTED_MODULE_2__utils_auth__["b" /* removeToken */])();
+          Object(__WEBPACK_IMPORTED_MODULE_3__adminPc_router__["d" /* resetRouter */])();
           resolve();
         }).catch(function (error) {
           reject(error);

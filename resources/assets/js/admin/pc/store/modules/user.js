@@ -1,5 +1,6 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login.js'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import router, { resetRouter } from '@adminPc/router'
 
 const user = {
   state: {
@@ -122,6 +123,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
+          resetRouter()
           resolve()
         }).catch(error => {
           reject(error)

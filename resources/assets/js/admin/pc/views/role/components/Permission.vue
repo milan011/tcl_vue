@@ -19,7 +19,7 @@
 </div>
 </template>
 <script>
-  import { getRolePermissions, getPermissions, giveRolePermissions } from '@/api/role'
+  import { getRolePermissions, getPermissions, giveRolePermissions } from '@adminPc/api/role'
   // const cityOptions = ['上海', '北京', '广州', '深圳'];
   export default {
     data() {
@@ -43,7 +43,8 @@
     methods: {
       getPermissionList() {
         getPermissions().then(response => {
-          this.permissions = response.data.data
+          console.log(response.data)
+          this.permissions = response.data
         })
       },
       handlePermission(row) { 

@@ -62,13 +62,14 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: 'dashboard',
+    meta:{ affix:true },
     children: [
       {
         path: 'dashboard',
         // component: () => import('@adminPc/views/dashboard/index'),
         component: resolve => void(require(['@adminPc/views/dashboard/index'], resolve)),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
+        meta: { title: 'dashboard', icon: 'dashboard', noCache: true, affix: true }
       }
     ]
   },
@@ -83,11 +84,11 @@ export const constantRouterMap = [
   // infoSelfRouter,
 ]
 
-export default new Router({
+/*export default new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
-})
+})*/
 
 export const asyncRouterMap = [
   //infoStatisticsRouter,
@@ -106,4 +107,20 @@ export const asyncRouterMap = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+const createRouter = () => new Router({
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRouterMap,
+})
+
+const router = createRouter()
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
+  
+}
+
+export default router
 

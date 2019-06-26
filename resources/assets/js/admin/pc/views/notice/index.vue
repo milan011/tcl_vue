@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column :label="$t('notice.title')" show-overflow-tooltip align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}2</span>
+          <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.date')" width="150px" align="center">
@@ -250,8 +250,8 @@ export default {
       }*/
       this.temp = {
         id: undefined,
-        title: '',      
-        content: '',   
+        title: '又一个公告',      
+        content: '大家都来淘车乐买车/卖车啊',   
       }
     },
     handleCreate() {
@@ -264,25 +264,15 @@ export default {
     },
     createData() {
       console.log(this.temp)
-      return false
+      // return false
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           createNotice(this.temp).then((response) => {
-          //console.log(response.data.data);
+          console.log(response.data.data);
           // console.log(this.temp)
           //return false
             if(response.data.status){
               let noticeData = response.data.data
-
-              // noticeData.is_food = noticeData.is_food
-              /*let newNotice = {
-                id: noticeData.id,
-                month_nums: noticeData.month_nums,
-                package_price: noticeData.package_price,
-                created_at: new Date()
-              }*/
-              /*this.temp.id = response.data.data.scalar.id
-              this.temp.created_at = response.data.data.scalar.created_at | parseTime('{y}-{m}-{d}')*/
               this.list.unshift(noticeData)
               this.dialogFormVisible = false
               this.$notify({
@@ -312,11 +302,6 @@ export default {
     handleUpdate(row) {
         // console.log(row)
         this.temp = Object.assign({}, row) // copy obj
-        // this.temp.noticeCity = ['10', '138']
-        const pid = row.belongs_to_city.pid.toString(10) 
-        const id = row.belongs_to_city.id.toString(10) 
-        this.temp.noticeCity = [pid, id]
-        // console.log(this.temp.noticeCity)
         this.dialogStatus = 'update'
         this.dialogFormVisible = true
         this.$nextTick(() => {

@@ -75,6 +75,9 @@ export default {
         toolbar: this.toolbar.length > 0 ? this.toolbar : toolbar,
         menubar: this.menubar,
         plugins: plugins,
+        toolbar1:
+        "fontsizeselect",
+        fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
         end_container_on_empty_block: true,
         powerpaste_word_import: 'clean',
         code_dialog_height: 450,

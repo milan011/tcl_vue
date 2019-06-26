@@ -26,7 +26,6 @@
 <script>
 import ScrollPane from '@/components/ScrollPane'
 import { generateTitle } from '@/utils/i18n'
-import path from 'path'
 
 export default {
   components: { ScrollPane },
@@ -41,9 +40,6 @@ export default {
   computed: {
     visitedViews() {
       return this.$store.state.tagsView.visitedViews
-    },
-    routes() {
-      return this.$store.state.permission.routers
     }
   },
   watch: {
@@ -60,7 +56,6 @@ export default {
     }
   },
   mounted() {
-    this.initTags()
     this.addViewTags()
   },
   methods: {
@@ -73,40 +68,6 @@ export default {
     },
     isActive(route) {
       return route.path === this.$route.path
-    },
-    filterAffixTags(routes, basePath = '/') {
-      let tags = []
-      routes.forEach(route => {
-        
-        if (route.meta && route.meta.affix) {
-          const tagPath = path.resolve(basePath, route.path)
-          tags.push({
-            fullPath: tagPath,
-            path: tagPath,
-            name: route.name,
-            meta: { ...route.meta }
-          })
-        }
-        if (route.children) {
-          // alert('5')
-          const tempTags = this.filterAffixTags(route.children, route.path)
-          if (tempTags.length >= 1) {
-            tags = [...tags, ...tempTags]
-          }
-        }
-      })
-      return tags
-    },
-    initTags() {
-      // console.log(this.routes)
-      const affixTags = this.affixTags = this.filterAffixTags(this.routes)
-      for (const tag of affixTags) {
-        // Must have tag name
-        if (tag.name) {
-          console.log(tag.name)
-          this.$store.dispatch('addVisitedView', tag)
-        }
-      }
     },
     addViewTags() {
       const route = this.generateRoute()

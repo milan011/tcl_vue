@@ -58,8 +58,7 @@ class NoticeRepository implements NoticeRepositoryInterface
         $notice->fill($input);
 
         $notice = $notice->create($input);
-
-        Session::flash('sucess', '添加公告成功');          
+         
         return $notice;
     }
 

@@ -55,11 +55,17 @@ class NoticeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreNoticeRequest $noticeRequest)
-    {
-        $getInsertedId = $this->notice->create($noticeRequest);
-        // p(lastSql());exit;
-        return redirect()->route('admin.notice.index')->withInput();
+    public function store(Request $noticeRequest)
+    {   
+        // dd($noticeRequest->all());
+        $new_notice = $this->notice->create($noticeRequest);
+        $new_notice->belongsToUser;
+        
+        if($new_notice){ //添加成功
+            return $this->baseSucceed($respond_data = $new_notice, $message = '添加成功');
+        }else{  //添加失败
+            return $this->baseFailed($message = '内部错误');
+        }
     }
 
     /**

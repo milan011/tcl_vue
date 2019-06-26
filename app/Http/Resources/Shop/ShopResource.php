@@ -14,7 +14,9 @@ class ShopResource extends Resource
      */
     public function toArray($request)
     {
-        // dd($this);
+        /*p($this->total());
+        dd($this->items());
+        dd($this);*/
 
         /*return [
             'id' => $this->id,
@@ -24,13 +26,14 @@ class ShopResource extends Resource
             'remark' => $this->remark,       
             'created_at' => $this->created_at,       
         ];*/
+
         return parent::toArray($request);
     }
 
     /*public function with($request)
     {
         return [
-            'return_month_price' => $this->hasManyShopInfo(),
+            'info' => 'sihuiyaoqiu',
         ];
     }*/
 }

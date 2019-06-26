@@ -70,7 +70,7 @@ class ShopController extends Controller
      */
     public function store(Request $shopRequest)
     {
-        dd($shopRequest->all());
+        // dd($shopRequest->all());
         if($this->shop->isRepeat($shopRequest)){
             return $this->baseFailed($message = '该门店已存在');
         }
@@ -79,7 +79,7 @@ class ShopController extends Controller
         $new_shop->belongsToCreater;
 
         if($new_shop){ //添加成功
-            return $this->baseSucceed($respond_data = $new_shop, $message = '添加成功');
+            return $this->baseSucceed($Data = $new_shop, $Message = '添加成功');
         }else{  //添加失败
             return $this->baseFailed($message = '内部错误');
         }   
@@ -132,7 +132,7 @@ class ShopController extends Controller
         $shop = $this->shop->update($shopRequest, $id);
         $shop->belongsToCity;
         // dd(redirect()->route('shop.index'));
-        return $this->baseSucceed($respond_data = $shop, $message = '修改成功');
+        return $this->baseSucceed($Data = $shop, $Message = '修改成功');
     }
 
     /**

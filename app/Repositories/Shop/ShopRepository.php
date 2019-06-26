@@ -17,7 +17,7 @@ use App\Repositories\Shop\ShopRepositoryInterface;
 
 class ShopRepository implements ShopRepositoryInterface
 {
-
+    
     //默认查询数据
     protected $select_columns = ['id', 'pid', 'name', 'provence_id', 'city_id', 'telephone', 'address', 'qq_number', 'wx_number', 'email', 'status','user_id'];
 
