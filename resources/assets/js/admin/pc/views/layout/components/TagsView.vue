@@ -16,7 +16,7 @@
     </scroll-pane>
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
       <li @click="refreshSelectedTag(selectedTag)">{{ $t('tagsView.refresh') }}</li>
-      <li @click="closeSelectedTag(selectedTag)">{{ $t('tagsView.close') }}</li>
+      <li v-show="canClose" @click="closeSelectedTag(selectedTag)">{{ $t('tagsView.close') }}</li>
       <li @click="closeOthersTags">{{ $t('tagsView.closeOthers') }}</li>
       <li @click="closeAllTags">{{ $t('tagsView.closeAll') }}</li>
     </ul>
@@ -35,6 +35,7 @@ export default {
       visible: false,
       top: 0,
       left: 0,
+      canClose: true,
       selectedTag: {}
     }
   },
@@ -160,6 +161,9 @@ export default {
       this.$router.push('/')
     },
     openMenu(tag, e) {
+      if(tag.meta.affix){
+        this.canClose = false
+      }
       this.visible = true
       this.selectedTag = tag
       const offsetLeft = this.$el.getBoundingClientRect().left // container margin left

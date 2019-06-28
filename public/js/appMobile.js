@@ -4815,9 +4815,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator__ = __webpack_require__("./node_modules/babel-runtime/core-js/get-iterator.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ScrollPane__ = __webpack_require__("./resources/assets/js/components/ScrollPane/index.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ScrollPane___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_ScrollPane__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_i18n__ = __webpack_require__("./resources/assets/js/utils/i18n.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray__ = __webpack_require__("./node_modules/babel-runtime/helpers/toConsumableArray.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends__ = __webpack_require__("./node_modules/babel-runtime/helpers/extends.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_ScrollPane__ = __webpack_require__("./resources/assets/js/components/ScrollPane/index.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_ScrollPane___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_ScrollPane__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_i18n__ = __webpack_require__("./resources/assets/js/utils/i18n.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_path__ = __webpack_require__("./node_modules/path-browserify/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_path__);
+
+
 
 //
 //
@@ -4843,17 +4851,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: { ScrollPane: __WEBPACK_IMPORTED_MODULE_1__components_ScrollPane___default.a },
+  components: { ScrollPane: __WEBPACK_IMPORTED_MODULE_3__components_ScrollPane___default.a },
   data: function data() {
     return {
       visible: false,
       top: 0,
       left: 0,
+      canClose: true,
       selectedTag: {}
     };
   },
@@ -4861,6 +4872,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   computed: {
     visitedViews: function visitedViews() {
       return this.$store.state.tagsView.visitedViews;
+    },
+    routes: function routes() {
+      return this.$store.state.permission.routers;
     }
   },
   watch: {
@@ -4877,11 +4891,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   mounted: function mounted() {
+    this.initTags();
     this.addViewTags();
   },
 
   methods: {
-    generateTitle: __WEBPACK_IMPORTED_MODULE_2__utils_i18n__["a" /* generateTitle */], // generateTitle by vue-i18n
+    generateTitle: __WEBPACK_IMPORTED_MODULE_4__utils_i18n__["a" /* generateTitle */], // generateTitle by vue-i18n
     generateRoute: function generateRoute() {
       if (this.$route.name) {
         return this.$route;
@@ -4891,6 +4906,65 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     isActive: function isActive(route) {
       return route.path === this.$route.path;
     },
+    filterAffixTags: function filterAffixTags(routes) {
+      var _this = this;
+
+      var basePath = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '/';
+
+      var tags = [];
+      routes.forEach(function (route) {
+
+        if (route.meta && route.meta.affix) {
+          var tagPath = __WEBPACK_IMPORTED_MODULE_5_path___default.a.resolve(basePath, route.path);
+          tags.push({
+            fullPath: tagPath,
+            path: tagPath,
+            name: route.name,
+            meta: __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_extends___default()({}, route.meta)
+          });
+        }
+        if (route.children) {
+          // alert('5')
+          var tempTags = _this.filterAffixTags(route.children, route.path);
+          if (tempTags.length >= 1) {
+            tags = [].concat(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray___default()(tags), __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_toConsumableArray___default()(tempTags));
+          }
+        }
+      });
+      return tags;
+    },
+    initTags: function initTags() {
+      // console.log(this.routes)
+      var affixTags = this.affixTags = this.filterAffixTags(this.routes);
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default()(affixTags), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var tag = _step.value;
+
+          // Must have tag name
+          if (tag.name) {
+            console.log(tag.name);
+            this.$store.dispatch('addVisitedView', tag);
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    },
     addViewTags: function addViewTags() {
       var route = this.generateRoute();
       if (!route) {
@@ -4899,74 +4973,75 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.$store.dispatch('addView', route);
     },
     moveToCurrentTag: function moveToCurrentTag() {
-      var _this = this;
+      var _this2 = this;
 
       var tags = this.$refs.tag;
+      // console.log(tags)
       this.$nextTick(function () {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default()(tags), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var tag = _step.value;
+          for (var _iterator2 = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_get_iterator___default()(tags), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var tag = _step2.value;
 
-            if (tag.to.path === _this.$route.path) {
-              _this.$refs.scrollPane.moveToTarget(tag.$el);
+            if (tag.to.path === _this2.$route.path) {
+              _this2.$refs.scrollPane.moveToTarget(tag.$el);
               break;
             }
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
             }
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            if (_didIteratorError2) {
+              throw _iteratorError2;
             }
           }
         }
       });
     },
     refreshSelectedTag: function refreshSelectedTag(view) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.$store.dispatch('delCachedView', view).then(function () {
         var fullPath = view.fullPath;
 
-        _this2.$nextTick(function () {
-          _this2.$router.replace({
+        _this3.$nextTick(function () {
+          _this3.$router.replace({
             path: '/redirect' + fullPath
           });
         });
       });
     },
     closeSelectedTag: function closeSelectedTag(view) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.$store.dispatch('delView', view).then(function (_ref) {
         var visitedViews = _ref.visitedViews;
 
-        if (_this3.isActive(view)) {
+        if (_this4.isActive(view)) {
           var latestView = visitedViews.slice(-1)[0];
           if (latestView) {
-            _this3.$router.push(latestView);
+            _this4.$router.push(latestView);
           } else {
-            _this3.$router.push('/');
+            _this4.$router.push('/');
           }
         }
       });
     },
     closeOthersTags: function closeOthersTags() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.$router.push(this.selectedTag);
       this.$store.dispatch('delOthersViews', this.selectedTag).then(function () {
-        _this4.moveToCurrentTag();
+        _this5.moveToCurrentTag();
       });
     },
     closeAllTags: function closeAllTags() {
@@ -4974,6 +5049,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.$router.push('/');
     },
     openMenu: function openMenu(tag, e) {
+      if (tag.meta.affix) {
+        this.canClose = false;
+      }
       this.visible = true;
       this.selectedTag = tag;
       var offsetLeft = this.$el.getBoundingClientRect().left; // container margin left
@@ -99892,16 +99970,19 @@ var render = function() {
               _vm._v(
                 "\n      " + _vm._s(_vm.generateTitle(tag.title)) + "\n      "
               ),
-              _c("span", {
-                staticClass: "el-icon-close",
-                on: {
-                  click: function($event) {
-                    $event.preventDefault()
-                    $event.stopPropagation()
-                    _vm.closeSelectedTag(tag)
-                  }
-                }
-              })
+              _vm._v(" "),
+              !tag.meta.affix
+                ? _c("span", {
+                    staticClass: "el-icon-close",
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        $event.stopPropagation()
+                        _vm.closeSelectedTag(tag)
+                      }
+                    }
+                  })
+                : _vm._e()
             ]
           )
         })
@@ -99937,6 +100018,14 @@ var render = function() {
           _c(
             "li",
             {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.canClose,
+                  expression: "canClose"
+                }
+              ],
               on: {
                 click: function($event) {
                   _vm.closeSelectedTag(_vm.selectedTag)
